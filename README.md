@@ -11,7 +11,7 @@ kubectl apply -f https://raw.githubusercontent.com/rook/rook/refs/heads/master/d
 ```
 * start a ceph cluster with jaeger tracing enabled:
 ```bash
-kubectly appl -f cluster-test.yaml
+kubectl apply -f cluster-test.yaml
 ```
 * start object store with jaeger tracing enabled:
 ```bash

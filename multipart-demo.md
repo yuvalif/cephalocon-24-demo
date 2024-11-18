@@ -8,4 +8,19 @@ TOOLBOX_POD=$(kubectl -n rook-ceph get pods -l=app=rook-ceph-tools -o jsonpath='
 kubectl -n rook-ceph cp multipart-trace.lua $TOOLBOX_POD:/tmp/multipart-trace.lua
 kubectl -n rook-ceph exec -it deploy/rook-ceph-tools -- bash -c "radosgw-admin script put --context=prerequest --infile /tmp/multipart-trace.lua"
 ```
-
+* perform multipart upload "manually" using the s3api, by calling: `create-multipart-upload`, `upload-part`, `complete-multipart-upload`:
+```bash
+TODO
+```
+* fetch the traces:
+```bash
+TODO
+```
+* perform multipart upload "manually" using the s3api, without calling `complete-multipart-upload` to simulate a failed upload:
+```bash
+TODO
+```
+* fetch the traces:
+```bash
+TODO
+```
