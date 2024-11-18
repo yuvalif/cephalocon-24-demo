@@ -42,7 +42,7 @@ spec:
     #config:
     #  deviceClass: testclass
   monitoring:
-    enabled: false
+    enabled: true
   healthCheck:
     daemonHealth:
       mon:
