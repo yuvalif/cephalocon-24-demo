@@ -18,7 +18,7 @@ spec:
       sidecar.jaegertracing.io/inject: "true"
   dataDirHostPath: /var/lib/rook
   cephVersion:
-    image: quay.io/ceph/ceph:v19
+    image: quay.io/ceph/ceph:v19.2.0
     allowUnsupported: true
   mon:
     count: 1
@@ -57,6 +57,7 @@ spec:
     global:
       jaeger_tracing_enable: "true"
       jaeger_agent_port: "6831"
+      debug_trace: "20"
       osd_pool_default_size: "1"
       mon_warn_on_pool_no_redundancy: "false"
       bdev_flock_retry: "20"
