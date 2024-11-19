@@ -19,7 +19,7 @@ echo 123 > large_test_file
 echo 123 > large_test_file
 ```
 
-1. start a multipart upload
+2. start a multipart upload
 
 ```jsx
  aws --endpoint-url $AWS_URL s3api create-multipart-upload --bucket $BUCKET_NAME --key large_test_file
@@ -33,7 +33,7 @@ echo 123 > large_test_file
 
 ![image.png](images/image.png)
 
-1. upload the first part of multipart upload using the UploadID generated from previous command
+3. upload the first part of multipart upload using the UploadID generated from previous command
 
 ```jsx
  aws --endpoint-url $AWS_URL s3api upload-part --bucket $BUCKET_NAME --key large_test_file --part-number 1 --body large_test_file --upload-id 2~k7YO00tv8266cp3iZ_tcVRBD0uNBGke
@@ -42,7 +42,7 @@ echo 123 > large_test_file
 }
 ```
 
-1. list the multipart upload for the file `large_test_file`
+4. list the multipart upload for the file `large_test_file`
 
 ```jsx
 aws --endpoint-url $AWS_URL s3api list-parts --bucket $BUCKET_NAME --key large_test_file --upload-id 2~k7YO00tv8266cp3iZ_tcVRBD0uNBGke
@@ -67,7 +67,7 @@ aws --endpoint-url $AWS_URL s3api list-parts --bucket $BUCKET_NAME --key large_t
 
 ![image.png](images/image%201.png)
 
-1. complete the multipart upload
+5. complete the multipart upload
 
 ```jsx
 echo '{"Parts":[{"ETag":"ba1f2511fc30423bdbb183fe33f3dd0f","PartNumber":1}]}' > etag.json
