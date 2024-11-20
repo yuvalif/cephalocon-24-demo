@@ -10,9 +10,13 @@ kubectl create -f https://raw.githubusercontent.com/rook/rook/refs/heads/master/
 kubectl create -f https://raw.githubusercontent.com/rook/rook/refs/heads/master/deploy/examples/monitoring/prometheus-service.yaml
 ```
 
-* setup slow-ops alert in prometheus:
+* Setup prometheus alerts with slow-ops alert in prometheus
+  
+from rook repo, edit `deploy/examples/monitoring/localrules.yaml` to lower `CephSlowOps` to 3s
+
 ```bash
-TODO
+kubectl create -f deploy/examples/monitoring/rbac.yaml
+kubectl create -f deploy/examples/monitoring/localrules.yaml
 ```
 
 * add the [lua-requests](https://github.com/JakobGreen/lua-requests) luarocks package to the allowlist and reload:
@@ -31,17 +35,31 @@ kubectl -n rook-ceph exec -it deploy/rook-ceph-tools -- bash -c "radosgw-admin s
 kubectl -n rook-ceph exec -it deploy/rook-ceph-tools -- bash -c "radosgw-admin script put --context=prerequest --infile /tmp/slow-ops-trace.lua"
 ```
 
+* Generate worlkload:
+run rados bench or any other heavy workload
+```
+ rados bench -p testbench 105 write -t 4
+```
+
 * verify that no traces are being generated:
 ```bash
-TODO
+curl "$JAEGER_URL/api/traces?service=rgw&limit=20&lookback=1h" | jq
 ```
 
 * change the environment to cause slow-ops:
-```bash
-TODO
+
+1. set the paramater to reproduce slow Ops
+
+```
+ceph config set osd osd_op_complaint_time 0.01
+```
+* run rados bench or any other heavy workload again for longer duration
+
+```
+ rados bench -p testbench 200 write -t 4
 ```
 
 * verify that traces are being generated:
 ```bash
-TODO
+curl "$JAEGER_URL/api/traces?service=rgw&limit=20&lookback=1h" | jq
 ```
