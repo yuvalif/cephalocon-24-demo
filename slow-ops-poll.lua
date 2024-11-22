@@ -1,23 +1,20 @@
-requests = require("requests")
+local http = require("socket.http")
+local json = require("dkjson")
 
--- TODO: how to get the prometheus service address?
-response = requests.get("http://<prometheus service>:9090/api/v1/alerts")
+local response, status_code, headers = http.request("http://localhost:30900/api/v1/alerts")
+if status_code == 200 then
+  local json_body, pos, err = json.decode(response, 1, nil)
+   alerts = json_body["data"]["alerts"]
 
-json_body, err = response.json()
-
-if err then
-  RGWDebugLog("Failed to parse alerts response from prometheus. error: " .. err)
-  return
+   for _, alert in ipairs(alerts) do
+     if alert["labels"]["alertname"] == "CephSlowOps" then
+       -- TODO: detect and set alert per pool/storage class
+       RGWDebugLog("slow ops alert was detected")
+       RGW["slow_ops_alert"] = true
+       return
+     end
+   end
+else
+    --- RGWDebugLog("Failed to parse alerts response from prometheus. error: " .. err)
+    print("Failed to retrieve the page.")
 end
-
-alerts = json_body["data"]["alerts"]
-
-for _, alert in ipairs(alerts) do
-  if alert["labels"]["alertname"] == "slow-ops" then
-    -- TODO: detect and set alert per pool/storage class
-    RGWDebugLog("slow ops alert was detected")
-    RGW["slow_ops_alert"] = true
-    return
-  end
-end
-
