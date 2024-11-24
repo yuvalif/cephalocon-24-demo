@@ -55,7 +55,6 @@ spec:
     managePodBudgets: true
   cephConfig:
     global:
-      jaeger_tracing_enable: "true"
       jaeger_agent_port: "6831"
       debug_trace: "20"
       osd_pool_default_size: "1"
