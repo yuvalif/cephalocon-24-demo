@@ -5,6 +5,7 @@ kubectl create -f https://raw.githubusercontent.com/prometheus-operator/promethe
 
 * setup promeheus to monitor Ceph:
 ```bash
+kubectl create -f https://raw.githubusercontent.com/coreos/prometheus-operator/v0.71.1/bundle.yaml
 kubectl create -f https://raw.githubusercontent.com/rook/rook/refs/heads/master/deploy/examples/monitoring/service-monitor.yaml
 kubectl create -f https://raw.githubusercontent.com/rook/rook/refs/heads/master/deploy/examples/monitoring/prometheus.yaml
 kubectl create -f https://raw.githubusercontent.com/rook/rook/refs/heads/master/deploy/examples/monitoring/prometheus-service.yaml
@@ -22,8 +23,9 @@ kubectl create -f deploy/examples/monitoring/localrules.yaml
 * add the [lua-requests](https://github.com/JakobGreen/lua-requests) luarocks package to the allowlist and reload:
 ```bash
 TOOLBOX_POD=$(kubectl -n rook-ceph get pods -l=app=rook-ceph-tools -o jsonpath='{.items[0].metadata.name}')
-kubectl -n rook-ceph exec -it deploy/rook-ceph-tools -- bash -c "radosgw-admin script-package add --package=lua-requests --allow-compilation"
-kubectl -n rook-ceph exec -it deploy/rook-ceph-tools -- bash -c "radosgw-admin script-package reload"
+kubectl -n rook-ceph exec -it deploy/rook-ceph-tools -- bash -c "radosgw-admin script-package add --package=dkjson --allow-compilation"
+kubectl -n rook-ceph exec -it deploy/rook-ceph-tools -- bash -c "radosgw-admin script-package add --package=socket.http --allow-compilation"
+kubectl -n rook-ceph exec -it deploy/rook-ceph-tools -- bash -c "radosgw-admin script-package list"
 ```
 
 * add the background lua script to poll the slow-ops alert, and the prerequest lua script to set tracing if slow-ops alert is triggered:
@@ -38,7 +40,8 @@ kubectl -n rook-ceph exec -it deploy/rook-ceph-tools -- bash -c "radosgw-admin s
 * Generate worlkload:
 run rados bench or any other heavy workload
 ```
- rados bench -p testbench 105 write -t 4
+ kubectl -n rook-ceph exec -it deploy/rook-ceph-tools -- ceph osd pool create testbench 32 
+ kubectl -n rook-ceph exec -it deploy/rook-ceph-tools -- rados bench -p testbench 1 write -t 4
 ```
 
 * verify that no traces are being generated:
