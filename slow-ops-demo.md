@@ -17,7 +17,8 @@ from rook repo, edit `deploy/examples/monitoring/localrules.yaml` to lower `Ceph
 
 ```bash
 kubectl create -f deploy/examples/monitoring/rbac.yaml
-kubectl create -f deploy/examples/monitoring/localrules.yaml
+kubectl create -f https://raw.githubusercontent.com/rook/rook/refs/heads/master/deploy/examples/monitoring/prometheus-service.yaml
+kubectl create -f https://raw.githubusercontent.com/yuvalif/cephalocon-24-demo/refs/heads/main/localrules.yaml
 ```
 
 * add the [lua-requests](https://github.com/JakobGreen/lua-requests) luarocks package to the allowlist and reload:
@@ -54,12 +55,12 @@ curl "$JAEGER_URL/api/traces?service=rgw&limit=20&lookback=1h" | jq
 1. set the paramater to reproduce slow Ops
 
 ```
-ceph config set osd osd_op_complaint_time 0.01
+ceph config set osd osd_op_complaint_time 0.001
 ```
 * run rados bench or any other heavy workload again for longer duration
 
 ```
- rados bench -p testbench 200 write -t 4
+ rados bench -p testbench 20 write -t 4
 ```
 
 * verify that traces are being generated:
