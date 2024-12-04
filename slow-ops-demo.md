@@ -64,14 +64,9 @@ radosgw-admin script put --context=prerequest --infile /tmp/slow-ops-trace.lua
 ```
 
 * Generate worlkload:
-run rados bench or any other heavy workload
+run rados hsbench or any other heavy workload
 
 ```bash
- kubectl -n rook-ceph exec -it deploy/rook-ceph-tools --  \
- ceph osd pool create test 32 
- kubectl -n rook-ceph exec -it deploy/rook-ceph-tools -- \
- rados bench -p test 1 write -t 4
- or run
  hsbench -u http://127.0.0.1:32741 -z 4K -d 1 -a BSGUB92SRUAR9NIW5PQH -s CzWBqC0jrBYhvsqUJlCMMdbb9x0fXhHmjxsG9Nsb
 ```
 
@@ -93,9 +88,6 @@ curl "$JAEGER_URL/api/traces?service=rgw&limit=20&lookback=1h" | jq
 * run rados bench or any other heavy workload again for longer duration
 
 ```bash
-  kubectl -n rook-ceph exec -it deploy/rook-ceph-tools --  \
-  rados bench -p test 50 write -t 4 
-  or run
   hsbench -u http://127.0.0.1:32741 -z 4K -d 50 \
   -t 10 -a BSGUB92SRUAR9NIW5PQH -s CzWBqC0jrBYhvsqUJlCMMdbb9x0fXhHmjxsG9Nsb
 ```
