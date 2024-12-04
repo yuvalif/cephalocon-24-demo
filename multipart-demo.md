@@ -1,3 +1,7 @@
+* make sure you have tracing disabled
+```
+kubectl -n rook-ceph exec -it deploy/rook-ceph-tools -- ceph config get client.rgw jaeger_tracing_enable
+```
 * install the toolbox pod (currently lua script can only be loaded by an admin command):
 ```bash
 kubectl create -f https://raw.githubusercontent.com/rook/rook/refs/heads/master/deploy/examples/toolbox.yaml
