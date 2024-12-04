@@ -30,8 +30,8 @@ from rook repo, edit `deploy/examples/monitoring/localrules.yaml` to lower
 kubectl create -f deploy/examples/monitoring/rbac.yaml
 kubectl create -f https://raw.githubusercontent.com/rook/rook/refs/heads/master/deploy/examples/monitoring/prometheus-service.yaml
 kubectl create -f https://raw.githubusercontent.com/yuvalif/cephalocon-24-demo/refs/heads/main/localrules.yaml
-export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
-kubectl rook-ceph ceph config set mgr mgr/prometheus/scrape_interval 3
+kubectl -n rook-ceph exec -it deploy/rook-ceph-tools -- \
+ceph config set mgr mgr/prometheus/scrape_interval 3
 ```
 
 * add the [lua-requests](https://github.com/JakobGreen/lua-requests) luarocks
@@ -39,10 +39,14 @@ kubectl rook-ceph ceph config set mgr mgr/prometheus/scrape_interval 3
 
 ```bash
 TOOLBOX_POD=$(kubectl -n rook-ceph get pods -l=app=rook-ceph-tools -o jsonpath='{.items[0].metadata.name}')
-kubectl rook-ceph ceph config set client.rgw rgw_lua_max_memory_per_state 2048K
-kubectl rook-ceph radosgw-admin script-package add --package=lua-cjson --allow-compilation
-kubectl rook-ceph radosgw-admin script-package add --package=luasocket --allow-compilation
-kubectl rook-ceph radosgw-admin script-package list
+kubectl -n rook-ceph exec -it deploy/rook-ceph-tools --  \
+ceph config set client.rgw rgw_lua_max_memory_per_state 512K
+kubectl -n rook-ceph exec -it deploy/rook-ceph-tools --  \
+radosgw-admin script-package add --package=lua-cjson --allow-compilation
+kubectl -n rook-ceph exec -it deploy/rook-ceph-tools --  \
+radosgw-admin script-package add --package=luasocket --allow-compilation
+kubectl -n rook-ceph exec -it deploy/rook-ceph-tools -- \
+radosgw-admin script-package list
 kubectl rollout restart deployment rook-ceph-rgw-my-store-a -n rook-ceph
 ```
 
@@ -53,16 +57,20 @@ kubectl rollout restart deployment rook-ceph-rgw-my-store-a -n rook-ceph
 TOOLBOX_POD=$(kubectl -n rook-ceph get pods -l=app=rook-ceph-tools -o jsonpath='{.items[0].metadata.name}')
 kubectl -n rook-ceph cp slow-ops-poll.lua $TOOLBOX_POD:/tmp/slow-ops-poll.lua
 kubectl -n rook-ceph cp slow-ops-trace.lua $TOOLBOX_POD:/tmp/slow-ops-trace.lua
-kubectl rook-ceph radosgw-admin script put --context=background --infile /tmp/slow-ops-poll.lua
-kubectl rook-ceph radosgw-admin script put --context=prerequest --infile /tmp/slow-ops-trace.lua
+kubectl -n rook-ceph exec -it deploy/rook-ceph-tools --  \
+radosgw-admin script put --context=background --infile /tmp/slow-ops-poll.lua
+kubectl -n rook-ceph exec -it deploy/rook-ceph-tools --  \
+radosgw-admin script put --context=prerequest --infile /tmp/slow-ops-trace.lua
 ```
 
 * Generate worlkload:
 run rados bench or any other heavy workload
 
 ```bash
- kubectl rook-ceph ceph osd pool create test 32 
- kubectl rook-ceph rados bench -p test 1 write -t 4
+ kubectl -n rook-ceph exec -it deploy/rook-ceph-tools --  \
+ ceph osd pool create test 32 
+ kubectl -n rook-ceph exec -it deploy/rook-ceph-tools -- \
+ rados bench -p test 1 write -t 4
  or run
  hsbench -u http://127.0.0.1:32741 -z 4K -d 1 -a BSGUB92SRUAR9NIW5PQH -s CzWBqC0jrBYhvsqUJlCMMdbb9x0fXhHmjxsG9Nsb
 ```
@@ -78,13 +86,15 @@ curl "$JAEGER_URL/api/traces?service=rgw&limit=20&lookback=1h" | jq
 1. set the paramater to reproduce slow Ops
 
 ```bash
- kubectl rook-ceph ceph config set osd osd_op_complaint_time 0.001
+ kubectl -n rook-ceph exec -it deploy/rook-ceph-tools -- \
+ ceph config set osd osd_op_complaint_time 0.001
 ```
 
 * run rados bench or any other heavy workload again for longer duration
 
 ```bash
-  kubectl rook-ceph rados bench -p test 50 write -t 4 
+  kubectl -n rook-ceph exec -it deploy/rook-ceph-tools --  \
+  rados bench -p test 50 write -t 4 
   or run
   hsbench -u http://127.0.0.1:32741 -z 4K -d 50 \
   -t 10 -a BSGUB92SRUAR9NIW5PQH -s CzWBqC0jrBYhvsqUJlCMMdbb9x0fXhHmjxsG9Nsb
