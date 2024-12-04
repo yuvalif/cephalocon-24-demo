@@ -39,7 +39,7 @@ kubectl rook-ceph ceph config set mgr mgr/prometheus/scrape_interval 3
 
 ```bash
 TOOLBOX_POD=$(kubectl -n rook-ceph get pods -l=app=rook-ceph-tools -o jsonpath='{.items[0].metadata.name}')
-kubectl rook-ceph ceph config set client.rgw rgw_lua_max_memory_per_state 512K
+kubectl rook-ceph ceph config set client.rgw rgw_lua_max_memory_per_state 2048K
 kubectl rook-ceph radosgw-admin script-package add --package=lua-cjson --allow-compilation
 kubectl rook-ceph radosgw-admin script-package add --package=luasocket --allow-compilation
 kubectl rook-ceph radosgw-admin script-package list
