@@ -3,7 +3,7 @@
 
 * make sure tracing is disable right now
   ```
-   kubectl -n rook-ceph exec -it deploy/rook-ceph-tools -- ceph config set rgw.client jaeger_tracing_enable false
+   kubectl -n rook-ceph exec -it deploy/rook-ceph-tools -- ceph config set client.rgw jaeger_tracing_enable false
    
   ```
 * install prometheus in the cluster:
