@@ -88,7 +88,7 @@ curl "$JAEGER_URL/api/traces?service=rgw&limit=20&lookback=1h" | jq
 * run rados bench or any other heavy workload again for longer duration
 
 ```bash
-  hsbench -u http://127.0.0.1:32741 -z 4K -d 50 \
+  hsbench -u http://127.0.0.1:32741 -z 4K -d 40 \
   -t 10 -a BSGUB92SRUAR9NIW5PQH -s CzWBqC0jrBYhvsqUJlCMMdbb9x0fXhHmjxsG9Nsb
 ```
 
